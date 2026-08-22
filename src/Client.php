@@ -18,6 +18,7 @@ use ArrayPress\IPQualityScore\Response\CountryList;
 use ArrayPress\IPQualityScore\Response\FraudReport;
 use CURLFile;
 use DateTime;
+use ArrayPress\IPQualityScore\Traits\FailureCache;
 use WP_Error;
 
 /**
@@ -26,6 +27,8 @@ use WP_Error;
  * A comprehensive utility class for interacting with the IPQualityScore API service.
  */
 class Client {
+	use FailureCache;
+
 
 	/**
 	 * API key for IPQualityScore
@@ -373,9 +376,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'ip', [ 'ip' => $ip ] + $additional_params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -414,9 +425,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'email', [ 'email' => $email ] + $additional_params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -462,9 +481,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'phone', [ 'phone' => $phone ] + $additional_params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -522,12 +549,20 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'leaked', [
 			                                           'type'  => $type,
 			                                           'value' => $value
 		                                           ] + $additional_params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -568,9 +603,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'url', [ 'url' => $url ] + $additional_params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -615,12 +658,20 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$params         = $additional_params;
 		$params['file'] = new CURLFile( $file_path );
 
 		$response = $this->make_request( 'malware/scan', $params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -656,11 +707,19 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$params = array_merge( [ 'hash' => $file_hash ], $additional_params );
 
 		$response = $this->make_request( 'malware/lookup', $params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -696,11 +755,19 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$params = array_merge( [ 'url' => $url ], $additional_params );
 
 		$response = $this->make_request( 'malware/scan', $params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -774,9 +841,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'account', $additional_params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -992,9 +1067,17 @@ class Client {
 			}
 		}
 
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
+		}
+
 		$response = $this->make_request( 'requests', $params );
 
 		if ( is_wp_error( $response ) ) {
+			$this->cache_failure( $cache_key );
+
 			return $response;
 		}
 
@@ -1027,6 +1110,12 @@ class Client {
 			if ( false !== $cached_data ) {
 				return $raw ? $cached_data : new CountryList( $cached_data );
 			}
+		}
+
+		// A lookup that just failed will almost certainly fail again.
+		// Answer now rather than making this caller wait out the timeout too.
+		if ( $this->recently_failed( $cache_key ) ) {
+			return $this->recent_failure_error();
 		}
 
 		// Different URL structure for country list API

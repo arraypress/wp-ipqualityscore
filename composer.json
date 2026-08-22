@@ -48,5 +48,16 @@
     "data-breach",
     "leak-detection",
     "transaction-scoring"
-  ]
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ArrayPress\\IPQualityScore\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
 }
