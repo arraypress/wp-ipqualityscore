@@ -1,9 +1,9 @@
 {
-  "name": "arraypress/ipqualityscore",
+  "name": "arraypress/wp-ipqualityscore",
   "description": "A PHP library for integrating with the IPQualityScore API in WordPress, providing proxy, VPN & email validation, phone verification, dark web monitoring, URL scanning, and fraud prevention. Features comprehensive response handling and WordPress transient caching.",
   "type": "library",
   "license": "GPL-2.0-or-later",
-  "homepage": "https://github.com/arraypress/ipqualityscore/",
+  "homepage": "https://github.com/arraypress/wp-ipqualityscore/",
   "authors": [
     {
       "name": "David Sherlock",
@@ -26,8 +26,8 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "support": {
-    "issues": "https://github.com/arraypress/ipqualityscore/issues",
-    "source": "https://github.com/arraypress/ipqualityscore"
+    "issues": "https://github.com/arraypress/wp-ipqualityscore/issues",
+    "source": "https://github.com/arraypress/wp-ipqualityscore"
   },
   "keywords": [
     "ipqualityscore",
