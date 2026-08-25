@@ -96,5 +96,4 @@ class CountryList extends Base {
 	public function count(): int {
 		return count( $this->get_countries() );
 	}
-
 }

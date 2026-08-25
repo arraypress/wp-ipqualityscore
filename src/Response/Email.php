@@ -299,5 +299,4 @@ class Email extends Base {
 	public function get_a_records(): array {
 		return $this->data['a_records'] ?? [];
 	}
-
 }

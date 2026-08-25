@@ -134,5 +134,4 @@ class Transaction extends Base {
 	public function get_risk_factors_description(): array {
 		return $this->data['risk_factors_description'] ?? [];
 	}
-
 }

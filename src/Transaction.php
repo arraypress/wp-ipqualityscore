@@ -40,7 +40,7 @@ class Transaction {
 			'user_email',
 			'password_hash',
 			'user_phone',
-			'user_fingerprint'
+			'user_fingerprint',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -84,7 +84,7 @@ class Transaction {
 			'country',
 			'zipcode',
 			'region_code',
-			'country_code'
+			'country_code',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -117,7 +117,7 @@ class Transaction {
 			'country',
 			'zipcode',
 			'region_code',
-			'country_code'
+			'country_code',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -146,7 +146,7 @@ class Transaction {
 				'expiry_year',
 				'card_hash',
 				'avs_code',
-				'cvv_code'
+				'cvv_code',
 			];
 
 			foreach ( $allowed_card_fields as $field ) {
@@ -162,7 +162,7 @@ class Transaction {
 			'currency',
 			'time',
 			'gateway',
-			'payment_method'
+			'payment_method',
 		];
 
 		foreach ( $allowed_transaction_fields as $field ) {
@@ -200,7 +200,7 @@ class Transaction {
 			'shipping_speed',
 			'recurring_order',
 			'recurring_order_count',
-			'gift_order'
+			'gift_order',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -230,7 +230,7 @@ class Transaction {
 			'first_order_date',
 			'first_seen',
 			'last_seen',
-			'previous_purchases'
+			'previous_purchases',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -270,7 +270,7 @@ class Transaction {
 			'business_name',
 			'business_domain',
 			'business_type',
-			'business_id'
+			'business_id',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -294,7 +294,7 @@ class Transaction {
 			'strictness',
 			'fast',
 			'lighter_penalties',
-			'allow_public_access_points'
+			'allow_public_access_points',
 		];
 
 		foreach ( $allowed_fields as $field ) {
@@ -329,5 +329,4 @@ class Transaction {
 	public function get_data(): array {
 		return $this->data;
 	}
-
 }

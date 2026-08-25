@@ -114,5 +114,4 @@ class CreditUsage extends Base {
 
 		return round( ( $usage / $credits ) * 100, 2 );
 	}
-
 }

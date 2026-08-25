@@ -60,5 +60,4 @@ class EntryList extends Base {
 
 		return null;
 	}
-
 }

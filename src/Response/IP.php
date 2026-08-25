@@ -350,8 +350,7 @@ class IP extends Base {
 	 */
 	public function is_high_risk(): bool {
 		return $this->get_fraud_score() >= 90 ||
-		       $this->has_high_risk_attacks() ||
-		       ( $this->is_proxy() && $this->has_recent_abuse() );
+				$this->has_high_risk_attacks() ||
+				( $this->is_proxy() && $this->has_recent_abuse() );
 	}
-
 }

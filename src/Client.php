@@ -89,7 +89,7 @@ class Client {
 		'email'         => [ 'email' ],
 		'url'           => [ 'domain' ],
 		'phone'         => [ 'phone' ],
-		'custom'        => null // accepts any value_type for custom variables
+		'custom'        => null, // accepts any value_type for custom variables
 	];
 
 	/**
@@ -101,18 +101,18 @@ class Client {
 		'phone'            => [
 			'pattern'     => '%s%s/%s/%s', // base/endpoint/api_key/value
 			'method'      => 'GET',
-			'value_param' => 'phone'
+			'value_param' => 'phone',
 		],
 		'ip'               => [
 			'pattern'     => '%s%s/%s/%s', // base/endpoint/api_key/value
 			'method'      => 'GET',
-			'value_param' => 'ip'
+			'value_param' => 'ip',
 		],
 		'url'              => [
 			'pattern'      => '%s%s/%s/%s', // base/endpoint/api_key/value
 			'method'       => 'GET',
 			'value_param'  => 'url',
-			'encode_value' => true
+			'encode_value' => true,
 		],
 
 		// Special GET endpoints
@@ -121,59 +121,59 @@ class Client {
 			'method'       => 'GET',
 			'type_param'   => 'type',
 			'value_param'  => 'value',
-			'encode_value' => true
+			'encode_value' => true,
 		],
 		'account'          => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'GET'
+			'method'  => 'GET',
 		],
 
 		// List endpoints (GET)
 		'requests'         => [
 			'pattern'            => '%s%s/%s/list', // base/endpoint/api_key/list
 			'method'             => 'GET',
-			'skip_common_params' => true  // New flag to skip adding common parameters
+			'skip_common_params' => true,  // New flag to skip adding common parameters
 		],
 		'allowlist/list'   => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'GET'
+			'method'  => 'GET',
 		],
 		'blocklist/list'   => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'GET'
+			'method'  => 'GET',
 		],
 
 		// POST endpoints
 		'allowlist/create' => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'POST'
+			'method'  => 'POST',
 		],
 		'allowlist/delete' => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'POST'
+			'method'  => 'POST',
 		],
 		'blocklist/create' => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'POST'
+			'method'  => 'POST',
 		],
 		'blocklist/delete' => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'POST'
+			'method'  => 'POST',
 		],
 		'transaction'      => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'POST'
+			'method'  => 'POST',
 		],
 
 		'malware/scan'   => [
 			'pattern'   => '%s%s/%s', // base/endpoint/api_key
 			'method'    => 'POST',
-			'multipart' => true
+			'multipart' => true,
 		],
 		'malware/lookup' => [
 			'pattern' => '%s%s/%s', // base/endpoint/api_key
-			'method'  => 'POST'
-		]
+			'method'  => 'POST',
+		],
 	];
 
 	/**
@@ -231,15 +231,15 @@ class Client {
 		// Get endpoint configuration
 		$config = self::ENDPOINTS[ $endpoint ] ?? [
 			'pattern' => '%s%s/%s',
-			'method'  => 'POST'
+			'method'  => 'POST',
 		];
 
 		// Only add common parameters if not skipped for this endpoint
 		if ( empty( $config['skip_common_params'] ) ) {
 			$params = array_merge( [
 				'strictness'                 => $this->strictness,
-				'user_agent'                 => $_SERVER['HTTP_USER_AGENT'] ?? '',
-				'user_language'              => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+				'user_agent'                 => self::request_header( 'HTTP_USER_AGENT' ),
+				'user_language'              => self::request_header( 'HTTP_ACCEPT_LANGUAGE' ),
 				'allow_public_access_points' => $this->allow_public_access_points,
 				'lighter_penalties'          => $this->lighter_penalties,
 				'fast'                       => false,
@@ -311,6 +311,7 @@ class Client {
 			return new WP_Error(
 				'api_error',
 				sprintf(
+					/* translators: %s: the error message returned by WP_Http. */
 					__( 'IPQualityScore API request failed: %s', 'arraypress' ),
 					$response->get_error_message()
 				)
@@ -322,6 +323,7 @@ class Client {
 			return new WP_Error(
 				'api_error',
 				sprintf(
+					/* translators: %d: the HTTP status code returned by IPQualityScore. */
 					__( 'IPQualityScore API returned error code: %d', 'arraypress' ),
 					$status_code
 				)
@@ -363,6 +365,7 @@ class Client {
 		if ( ! filter_var( $ip, FILTER_VALIDATE_IP ) ) {
 			return new WP_Error(
 				'invalid_ip',
+				/* translators: %s: the IP address that failed validation. */
 				sprintf( __( 'Invalid IP address: %s', 'arraypress' ), $ip )
 			);
 		}
@@ -412,6 +415,7 @@ class Client {
 		if ( ! filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
 			return new WP_Error(
 				'invalid_email',
+				/* translators: %s: the email address that failed validation. */
 				sprintf( __( 'Invalid email format: %s', 'arraypress' ), $email )
 			);
 		}
@@ -518,9 +522,10 @@ class Client {
 	public function check_leaked_data( string $value, string $type = 'email', array $additional_params = [] ) {
 		$valid_types = [ 'email', 'password', 'username' ];
 
-		if ( ! in_array( $type, $valid_types ) ) {
+		if ( ! in_array( $type, $valid_types, true ) ) {
 			return new WP_Error(
 				'invalid_type',
+				/* translators: %s: a comma-separated list of the valid leak check types. */
 				sprintf( __( 'Invalid leak check type. Must be one of: %s', 'arraypress' ), implode( ', ', $valid_types ) )
 			);
 		}
@@ -535,7 +540,14 @@ class Client {
 			case 'password':
 			case 'username':
 				if ( empty( $value ) ) {
-					return new WP_Error( "invalid_{$type}", __( "{$type} cannot be empty", 'arraypress' ) );
+					return new WP_Error(
+						"invalid_{$type}",
+						sprintf(
+							/* translators: %s: the field name, either "password" or "username". */
+							__( '%s cannot be empty', 'arraypress' ),
+							$type
+						)
+					);
 				}
 				break;
 		}
@@ -556,9 +568,9 @@ class Client {
 		}
 
 		$response = $this->make_request( 'leaked', [
-			                                           'type'  => $type,
-			                                           'value' => $value
-		                                           ] + $additional_params );
+			'type'  => $type,
+			'value' => $value,
+		] + $additional_params );
 
 		if ( is_wp_error( $response ) ) {
 			$this->cache_failure( $cache_key );
@@ -590,6 +602,7 @@ class Client {
 		if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
 			return new WP_Error(
 				'invalid_url',
+				/* translators: %s: the URL that failed validation. */
 				sprintf( __( 'Invalid URL format: %s', 'arraypress' ), $url )
 			);
 		}
@@ -636,6 +649,7 @@ class Client {
 		if ( ! file_exists( $file_path ) || ! is_readable( $file_path ) ) {
 			return new WP_Error(
 				'invalid_file',
+				/* translators: %s: the path to the file that could not be read. */
 				sprintf( __( 'File not found or not readable: %s', 'arraypress' ), $file_path )
 			);
 		}
@@ -742,6 +756,7 @@ class Client {
 		if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
 			return new WP_Error(
 				'invalid_url',
+				/* translators: %s: the URL that failed validation. */
 				sprintf( __( 'Invalid URL format: %s', 'arraypress' ), $url )
 			);
 		}
@@ -801,6 +816,7 @@ class Client {
 			if ( ! isset( $transaction_data[ $field ] ) ) {
 				return new WP_Error(
 					'missing_field',
+					/* translators: %s: the name of the missing field. */
 					sprintf( __( 'Missing required field: %s', 'arraypress' ), $field )
 				);
 			}
@@ -895,6 +911,7 @@ class Client {
 		if ( isset( $data['ip'] ) && ! filter_var( $data['ip'], FILTER_VALIDATE_IP ) ) {
 			return new WP_Error(
 				'invalid_ip',
+				/* translators: %s: the IP address that failed validation. */
 				sprintf( __( 'Invalid IP address: %s', 'arraypress' ), $data['ip'] )
 			);
 		}
@@ -902,6 +919,7 @@ class Client {
 		if ( isset( $data['email'] ) && ! filter_var( $data['email'], FILTER_VALIDATE_EMAIL ) ) {
 			return new WP_Error(
 				'invalid_email',
+				/* translators: %s: the email address that failed validation. */
 				sprintf( __( 'Invalid email format: %s', 'arraypress' ), $data['email'] )
 			);
 		}
@@ -919,6 +937,7 @@ class Client {
 			if ( ! preg_match( '/^\+?[\d\s-]{9,20}$/', $data['phone'] ) ) {
 				return new WP_Error(
 					'invalid_phone',
+					/* translators: %s: the phone number that failed validation. */
 					sprintf( __( 'Invalid phone number format: %s', 'arraypress' ), $data['phone'] )
 				);
 			}
@@ -927,6 +946,7 @@ class Client {
 			if ( strlen( $data['country'] ) === 2 && ! preg_match( '/^[A-Z]{2}$/', strtoupper( $data['country'] ) ) ) {
 				return new WP_Error(
 					'invalid_country',
+					/* translators: %s: the country code that failed validation. */
 					sprintf( __( 'Invalid country code: %s', 'arraypress' ), $data['country'] )
 				);
 			}
@@ -978,7 +998,7 @@ class Client {
 	public function report_phone( string $phone, string $country, array $additional_params = [] ) {
 		return $this->report_fraud( [
 			'phone'   => $phone,
-			'country' => $country
+			'country' => $country,
 		], $additional_params );
 	}
 
@@ -1014,9 +1034,10 @@ class Client {
 	public function get_request_list( string $type, array $additional_params = [] ) {
 		// Validate request type
 		$valid_types = [ 'proxy', 'email', 'devicetracker', 'mobiletracker' ];
-		if ( ! in_array( $type, $valid_types ) ) {
+		if ( ! in_array( $type, $valid_types, true ) ) {
 			return new WP_Error(
 				'invalid_type',
+				/* translators: %s: a comma-separated list of the valid request types. */
 				sprintf( __( 'Invalid request type. Must be one of: %s', 'arraypress' ),
 					implode( ', ', $valid_types ) )
 			);
@@ -1025,11 +1046,11 @@ class Client {
 		// Set default date range if not provided
 		if ( ! isset( $additional_params['start_date'] ) ) {
 			// Default to 30 days ago
-			$additional_params['start_date'] = date( 'Y-m-d', strtotime( '-30 days' ) );
+			$additional_params['start_date'] = gmdate( 'Y-m-d', strtotime( '-30 days' ) );
 		}
 
 		if ( ! isset( $additional_params['stop_date'] ) ) {
-			$additional_params['stop_date'] = date( 'Y-m-d' );
+			$additional_params['stop_date'] = gmdate( 'Y-m-d' );
 		}
 
 		// Validate dates if provided
@@ -1039,6 +1060,7 @@ class Client {
 				if ( ! $date || $date->format( 'Y-m-d' ) !== $additional_params[ $date_field ] ) {
 					return new WP_Error(
 						'invalid_date',
+						/* translators: %s: the name of the date field. */
 						sprintf( __( 'Invalid date format for %s. Use YYYY-MM-DD', 'arraypress' ),
 							$date_field )
 					);
@@ -1048,9 +1070,10 @@ class Client {
 
 		// Validate IP if provided
 		if ( isset( $additional_params['ip_address'] ) &&
-		     ! filter_var( $additional_params['ip_address'], FILTER_VALIDATE_IP ) ) {
+			! filter_var( $additional_params['ip_address'], FILTER_VALIDATE_IP ) ) {
 			return new WP_Error(
 				'invalid_ip',
+				/* translators: %s: the IP address that failed validation. */
 				sprintf( __( 'Invalid IP address: %s', 'arraypress' ),
 					$additional_params['ip_address'] )
 			);
@@ -1134,6 +1157,7 @@ class Client {
 			return new WP_Error(
 				'api_error',
 				sprintf(
+					/* translators: %s: the error message returned by WP_Http. */
 					__( 'Country list request failed: %s', 'arraypress' ),
 					$response->get_error_message()
 				)
@@ -1145,6 +1169,7 @@ class Client {
 			return new WP_Error(
 				'api_error',
 				sprintf(
+					/* translators: %d: the HTTP status code returned by IPQualityScore. */
 					__( 'Country list API returned error code: %d', 'arraypress' ),
 					$status_code
 				)
@@ -1216,6 +1241,7 @@ class Client {
 		if ( ! $this->validate_list_value( $value, $value_type ) ) {
 			return new WP_Error(
 				'invalid_value',
+				/* translators: %s: the value type that failed validation. */
 				sprintf( __( 'Invalid format for value type: %s', 'arraypress' ), $value_type )
 			);
 		}
@@ -1223,7 +1249,7 @@ class Client {
 		$params = [
 			'value'      => $value,
 			'type'       => $type,
-			'value_type' => $value_type
+			'value_type' => $value_type,
 		];
 
 		if ( $reason !== null ) {
@@ -1257,7 +1283,7 @@ class Client {
 		$params = [
 			'value'      => $value,
 			'type'       => $type,
-			'value_type' => $value_type
+			'value_type' => $value_type,
 		];
 
 		$response = $this->make_request( 'allowlist/delete', $params );
@@ -1306,6 +1332,7 @@ class Client {
 		if ( ! $this->validate_list_value( $value, $value_type ) ) {
 			return new WP_Error(
 				'invalid_value',
+				/* translators: %s: the value type that failed validation. */
 				sprintf( __( 'Invalid format for value type: %s', 'arraypress' ), $value_type )
 			);
 		}
@@ -1313,7 +1340,7 @@ class Client {
 		$params = [
 			'value'      => $value,
 			'type'       => $type,
-			'value_type' => $value_type
+			'value_type' => $value_type,
 		];
 
 		if ( $reason !== null ) {
@@ -1347,7 +1374,7 @@ class Client {
 		$params = [
 			'value'      => $value,
 			'type'       => $type,
-			'value_type' => $value_type
+			'value_type' => $value_type,
 		];
 
 		$response = $this->make_request( 'blocklist/delete', $params );
@@ -1380,9 +1407,9 @@ class Client {
 				list( $ip, $mask ) = explode( '/', $value );
 
 				return filter_var( $ip, FILTER_VALIDATE_IP ) !== false &&
-				       is_numeric( $mask ) &&
-				       $mask >= 0 &&
-				       $mask <= 32;
+						is_numeric( $mask ) &&
+						$mask >= 0 &&
+						$mask <= 32;
 			case 'email':
 				return filter_var( $value, FILTER_VALIDATE_EMAIL ) !== false;
 			case 'domain':
@@ -1411,18 +1438,20 @@ class Client {
 			return new WP_Error(
 				'invalid_type',
 				sprintf(
-					__( 'Invalid %s type. Must be one of: %s', 'arraypress' ),
+					/* translators: 1: the list name, 2: a comma-separated list of allowed types. */
+					__( 'Invalid %1$s type. Must be one of: %2$s', 'arraypress' ),
 					$list_name,
 					implode( ', ', array_keys( self::ENTRYLIST_TYPES ) )
 				)
 			);
 		}
 
-		if ( $type !== 'custom' && ! in_array( $value_type, self::ENTRYLIST_TYPES[ $type ] ) ) {
+		if ( 'custom' !== $type && ! in_array( $value_type, self::ENTRYLIST_TYPES[ $type ], true ) ) {
 			return new WP_Error(
 				'invalid_value_type',
 				sprintf(
-					__( 'Invalid value type for %s. Must be one of: %s', 'arraypress' ),
+					/* translators: 1: the entry type, 2: a comma-separated list of allowed value types. */
+					__( 'Invalid value type for %1$s. Must be one of: %2$s', 'arraypress' ),
 					$type,
 					implode( ', ', self::ENTRYLIST_TYPES[ $type ] )
 				)
@@ -1458,14 +1487,51 @@ class Client {
 		}
 
 		global $wpdb;
-		$pattern = $wpdb->esc_like( '_transient_ipqs_' ) . '%';
 
-		return $wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-					$pattern
-				)
-			) !== false;
+		/*
+		 * Find the names, then let delete_transient() do the deleting.
+		 *
+		 * Deleting the rows directly leaves every _transient_timeout_ipqs_*
+		 * row behind -- those do not match the _transient_ipqs_ prefix, so a
+		 * DELETE ... LIKE '_transient_ipqs_%' orphans one options row per
+		 * cached lookup, permanently. delete_transient() removes both halves,
+		 * and it also fires the delete_transient_* hooks and clears the entry
+		 * from an external object cache, neither of which a raw DELETE does.
+		 */
+		$like = $wpdb->esc_like( '_transient_ipqs_' ) . '%';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+		$names = $wpdb->get_col(
+			$wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $like )
+		);
+
+		foreach ( (array) $names as $name ) {
+			delete_transient( substr( (string) $name, strlen( '_transient_' ) ) );
+		}
+
+		return true;
 	}
 
+
+	/**
+	 * Read a request header for forwarding to IPQualityScore.
+	 *
+	 * WordPress slashes the superglobals, so a header containing a quote
+	 * arrives with a backslash in front of it; sending that on would report a
+	 * user agent the visitor never sent. wp_unslash() undoes that, and
+	 * sanitize_text_field() strips control characters and tags before the value
+	 * goes into an outbound query string.
+	 *
+	 * @param string $key The $_SERVER key to read.
+	 *
+	 * @return string The cleaned header value, or an empty string.
+	 * @since 1.0.0
+	 */
+	private static function request_header( string $key ): string {
+		if ( empty( $_SERVER[ $key ] ) ) {
+			return '';
+		}
+
+		return sanitize_text_field( wp_unslash( $_SERVER[ $key ] ) );
+	}
 }

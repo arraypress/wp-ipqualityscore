@@ -161,5 +161,4 @@ class URL extends Base {
 	public function get_status_code(): ?int {
 		return isset( $this->data['status_code'] ) ? (int) $this->data['status_code'] : null;
 	}
-
 }

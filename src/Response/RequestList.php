@@ -103,5 +103,4 @@ class RequestList extends Base {
 
 		return null;
 	}
-
 }

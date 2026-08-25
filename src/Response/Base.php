@@ -91,5 +91,4 @@ abstract class Base {
 	public function __isset( string $name ): bool {
 		return isset( $this->data[ $name ] );
 	}
-
 }

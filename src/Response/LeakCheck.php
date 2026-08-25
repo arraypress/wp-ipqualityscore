@@ -89,5 +89,4 @@ class LeakCheck extends Base {
 	public function get_message(): ?string {
 		return $this->data['message'] ?? null;
 	}
-
 }

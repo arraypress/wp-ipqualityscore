@@ -44,7 +44,7 @@ class Phone extends Base {
 	 * @return int|null
 	 */
 	public function get_fraud_score(): ?int {
-		return isset($this->data['fraud_score']) ? (int)$this->data['fraud_score'] : null;
+		return isset($this->data['fraud_score']) ? (int) $this->data['fraud_score'] : null;
 	}
 
 	/**
@@ -179,7 +179,7 @@ class Phone extends Base {
 	 * @return int|null
 	 */
 	public function get_dialing_code(): ?int {
-		return isset($this->data['dialing_code']) ? (int)$this->data['dialing_code'] : null;
+		return isset($this->data['dialing_code']) ? (int) $this->data['dialing_code'] : null;
 	}
 
 	/**
@@ -233,7 +233,7 @@ class Phone extends Base {
 	 * @return array
 	 */
 	public function get_associated_email_addresses(): array {
-		if (!isset($this->data['associated_email_addresses'])) {
+		if ( ! isset($this->data['associated_email_addresses']) ) {
 			return [];
 		}
 		return $this->data['associated_email_addresses']['emails'] ?? [];
@@ -256,5 +256,4 @@ class Phone extends Base {
 	public function get_mcc(): ?string {
 		return $this->data['mcc'] !== 'N/A' ? $this->data['mcc'] : null;
 	}
-
 }
